@@ -3,7 +3,7 @@ const Token = require('../dao/models/token-mongoose');
 
 exports.showLogin = (req, res) => {
     const messages = req.flash();
-    res.render('login', { messages });
+    res.render('login', { messages, user: req.session.user || null });
 };
 
 exports.showRegister = (req, res) => {
