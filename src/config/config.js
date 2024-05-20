@@ -10,7 +10,9 @@ dotenv.config({
 const configObject = {
     SESSION_SECRET: process.env.SESSION_SECRET,
     MONGODB_URI: process.env.MONGODB_URI,
-    APP_PORT: process.env.APP_PORT
+    APP_PORT: process.env.APP_PORT,
+    EMAIL_USER: process.env.EMAIL_USER,
+    EMAIL_PASS: process.env.EMAIL_PASS
 }
 
 module.exports = configObject;

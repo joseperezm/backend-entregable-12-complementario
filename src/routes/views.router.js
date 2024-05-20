@@ -24,6 +24,9 @@ router.get("/chat", authorize('user'), redirectIfNotLoggedIn, chatViewController
 router.get("/realtimeproducts", authorize('admin'), redirectIfNotLoggedIn, realTimeProductsViewController.showRealTimeProducts);
 router.get("/mockingproducts", redirectIfNotLoggedIn, productsViewController.showMockProducts);
 
+router.get('/forgot-password', authViewController.showForgotPassword);
+router.get('/reset-password/:token', authViewController.showResetPasswordForm);
+
 router.get('/error', redirectIfNotLoggedIn, errorController.showError);
 
 module.exports = router;

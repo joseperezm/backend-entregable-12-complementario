@@ -1,3 +1,6 @@
+const crypto = require('crypto');
+const Token = require('../dao/models/token-mongoose');
+
 exports.showLogin = (req, res) => {
     const messages = req.flash();
     res.render('login', { messages });
@@ -10,4 +13,22 @@ exports.showRegister = (req, res) => {
 
 exports.showProfile = (req, res) => {
     res.render('profile', { user: req.session.user });
+};
+
+exports.showForgotPassword = (req, res) => {
+    const messages = req.flash();
+    res.render('forgot-password', { messages });
+};
+
+exports.showResetPasswordForm = async (req, res) => {
+    const { token } = req.params;
+    const hash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const resetToken = await Token.findOne({ token: hash });
+    if (!resetToken) {
+        req.flash('error', 'Token inválido o ha expirado.');
+        return res.redirect('/forgot-password');
+    }
+    const messages = req.flash();
+    res.render('reset-password', { token, messages });
 };

@@ -1,6 +1,90 @@
 const passport = require('passport');
 const createUserDto = require('../dto/userDto');
-const logger = require("../config/logger");
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const Token = require('../dao/models/token-mongoose');
+const UserModel = require('../dao/models/user-mongoose');
+const { createHash, isValidPassword } = require('../utils/hashBcrypt');
+const config = require('../config/config');
+const logger = require('../config/logger');
+
+const transport = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    auth: {
+        user: config.EMAIL_USER,
+        pass: config.EMAIL_PASS
+    },
+    pool: true,
+    rateLimit: 1,
+    maxConnections: 1,
+    maxMessages: 10
+});
+
+exports.requestResetPassword = async (req, res) => {
+    const { email } = req.body;
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+        req.flash('error', 'No existe una cuenta con ese correo.');
+        return res.redirect('/forgot-password');
+    }
+
+    let token = await Token.findOne({ userId: user._id });
+    if (token) await token.deleteOne();
+
+    let resetToken = crypto.randomBytes(32).toString('hex');
+    const hash = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    await new Token({
+        userId: user._id,
+        token: hash,
+        createdAt: Date.now()
+    }).save();
+
+    const link = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
+    await transport.sendMail({
+        to: user.email,
+        subject: 'Password Reset Request',
+        html: `<h4>Hola ${user.first_name}</h4>
+               <p>Por favor, haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+               <a href="${link}">Restablecer Contraseña</a>
+               <p>Este enlace expira en 1 hora.</p>`
+    });
+
+    req.flash('success', 'Correo de restablecimiento enviado.');
+    res.redirect('/login');
+};
+
+exports.resetPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const hash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const resetToken = await Token.findOne({ token: hash });
+    if (!resetToken) {
+        req.flash('error', 'Token inválido o ha expirado.');
+        return res.redirect('/forgot-password');
+    }
+
+    const user = await UserModel.findById(resetToken.userId);
+    if (!user) {
+        req.flash('error', 'Usuario no encontrado.');
+        return res.redirect('/forgot-password');
+    }
+
+    if (isValidPassword(password, user)) {
+        req.flash('error', 'No puedes usar la misma contraseña.');
+        return res.redirect(`/reset-password/${token}`);
+    }
+
+    user.password = createHash(password);
+    await user.save();
+    await resetToken.deleteOne();
+
+    req.flash('success', 'Contraseña restablecida exitosamente.');
+    res.redirect('/login');
+};
 
 exports.registrationInstructions = (req, res) => {
     const registrationInstructions = {

@@ -1,5 +1,5 @@
 const express = require('express');
-const flash = require('connect-flash');
+const flash = require('express-flash');
 const session = require('express-session');
 const exphbs = require("express-handlebars");
 const socket = require("socket.io");
@@ -17,6 +17,7 @@ const UserModel = require('./dao/models/user-mongoose.js');
 const errorHandler = require('./middleware/errorHandler.js');
 const errorCodes = require('./utils/errorCodes.js');
 const logger = require('./config/logger.js');
+const path = require('path');
 
 const PORT = config.APP_PORT;
 require("./database.js");
