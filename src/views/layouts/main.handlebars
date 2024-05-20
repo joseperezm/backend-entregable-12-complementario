@@ -43,16 +43,18 @@
               <li class="nav-item">
                 <a class="nav-link" href="/products">Productos</a>
               </li>
-              {{#if (eq user.role "admin")}}
+              {{#if (or (eq user.role "admin") (eq user.role "premium"))}}
               <div id="admin-flag" style="display: none;"></div>
                 <li class="nav-item">
                   <a class="nav-link" href="/realtimeproducts">Inventario</a>
                 </li>
+              {{/if}}
+              {{#if (eq user.role "admin")}}
                 <li class="nav-item">
                   <a class="nav-link" href="/carts">Carritos</a>
                 </li>
               {{/if}}
-              {{#if (eq user.role "user")}}
+              {{#if (or (eq user.role "user") (eq user.role "premium"))}}
                 <li class="nav-item">
                   <a class="nav-link" href="/carts/{{cartId}}">Mi Carrito</a>
                 </li>

@@ -8,7 +8,7 @@ exports.showLogin = (req, res) => {
 
 exports.showRegister = (req, res) => {
     const messages = req.flash();
-    res.render('register', { messages });
+    res.render('register', { messages, user: req.session.user || null });
 };
 
 exports.showProfile = (req, res) => {
@@ -17,7 +17,7 @@ exports.showProfile = (req, res) => {
 
 exports.showForgotPassword = (req, res) => {
     const messages = req.flash();
-    res.render('forgot-password', { messages });
+    res.render('forgot-password', { messages, user: req.session.user || null });
 };
 
 exports.showResetPasswordForm = async (req, res) => {
@@ -30,5 +30,5 @@ exports.showResetPasswordForm = async (req, res) => {
         return res.redirect('/forgot-password');
     }
     const messages = req.flash();
-    res.render('reset-password', { token, messages });
+    res.render('reset-password', { token, messages, user: req.session.user || null  });
 };

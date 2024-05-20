@@ -7,8 +7,8 @@ const authorizeApi = require('../middleware/authorizeApi.js');
 router.get('/products', redirectIfNotLoggedInApi, productsController.getProducts);
 router.get('/products/:pid', redirectIfNotLoggedInApi, productsController.getProductById);
 router.get('/mockingproducts', productsController.mockProducts);
-router.post('/products', authorizeApi('admin', 'premium'), redirectIfNotLoggedInApi, productsController.addProduct);
-router.put('/products/:id', authorizeApi('admin', 'premium'), redirectIfNotLoggedInApi, productsController.updateProduct);
-router.delete('/products/:pid', authorizeApi('admin', 'premium'), redirectIfNotLoggedInApi, productsController.deleteProduct);
+router.post('/products', authorizeApi(['admin', 'premium']), redirectIfNotLoggedInApi, productsController.addProduct);
+router.put('/products/:id', authorizeApi(['admin', 'premium']), redirectIfNotLoggedInApi, productsController.updateProduct);
+router.delete('/products/:pid', authorizeApi(['admin', 'premium']), redirectIfNotLoggedInApi, productsController.deleteProduct);
 
 module.exports = router;
