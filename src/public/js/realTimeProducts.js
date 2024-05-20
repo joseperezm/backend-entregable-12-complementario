@@ -47,6 +47,7 @@ const addProduct = () => {
     const form = document.querySelector('.texto-formulario');
 
     if (form.checkValidity() === true) {
+        const userId = document.getElementById("userId").value;
         const product = {
             title: document.getElementById("title").value,
             description: document.getElementById("description").value,
@@ -55,7 +56,8 @@ const addProduct = () => {
             code: document.getElementById("code").value,
             stock: parseInt(document.getElementById("stock").value),
             category: document.getElementById("category").value,
-            status: document.getElementById("status").value === "true"
+            status: document.getElementById("status").value === "true",
+            owner: userId
         };
 
         socket.emit("addProduct", product);
