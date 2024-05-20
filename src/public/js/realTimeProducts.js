@@ -21,6 +21,7 @@ const renderProducts = (productos) => {
             <p class="card-text">Stock: ${item.stock}</p>
             <p class="card-text">Status: ${item.status}</p>
             <p class="card-text">Code: ${item.code}</p>
+            <p class="card-text">Dueño: ${item.owner}</p>
             <p class="card-text mini mt-2 mb-2">ID: ${item._id}</p>
             <button type="button" class="btn btn-primary mt-2">Eliminar Producto</button>
         </div>

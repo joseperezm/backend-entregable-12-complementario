@@ -81,7 +81,10 @@ exports.addProduct = async (req, res, next) => {
             };
         }
 
-        const newProduct = { title, price, description, code, stock, category };
+        // Obtener el ID del usuario autenticado de la sesión
+        const ownerId = req.session.user.id;
+
+        const newProduct = { title, price, description, code, stock, category, owner: ownerId };
         const product = await productService.addProduct(newProduct);
         res.status(201).json({ id: product._id, message: 'Producto agregado correctamente' });
     } catch (error) {
