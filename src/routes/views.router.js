@@ -21,7 +21,7 @@ router.get('/login', redirectIfLoggedIn, authViewController.showLogin);
 router.get("/register", redirectIfLoggedIn, authViewController.showRegister);
 router.get('/profile', redirectIfNotLoggedIn, authViewController.showProfile);
 router.get("/chat", authorize('user'), redirectIfNotLoggedIn, chatViewController.showChat);
-router.get("/realtimeproducts", authorize('admin'), redirectIfNotLoggedIn, realTimeProductsViewController.showRealTimeProducts);
+router.get("/realtimeproducts", authorize('admin', 'premium'), redirectIfNotLoggedIn, realTimeProductsViewController.showRealTimeProducts);
 router.get("/mockingproducts", redirectIfNotLoggedIn, productsViewController.showMockProducts);
 
 router.get('/forgot-password', authViewController.showForgotPassword);
