@@ -10,6 +10,7 @@ const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
 const viewsRouter = require("./routes/views.router.js");
 const sessionsRouter = require('./routes/sessions.router.js');
+const usersRouter = require('./routes/users.router.js');
 const debugRouter = require('./routes/debug.router.js');
 const initializePassport = require("./config/passport.config.js");
 const config = require('./config/config.js');
@@ -102,6 +103,7 @@ app.use("/api", cartsRouter);
 app.use("/", viewsRouter);
 
 app.use('/api/sessions', sessionsRouter);
+app.use('/api/users', usersRouter);
 
 app.use((req, res, next) => {
     const error = new Error("Not Found");
