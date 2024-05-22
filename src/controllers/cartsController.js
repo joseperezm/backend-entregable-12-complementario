@@ -49,17 +49,17 @@ exports.addToCart = async (req, res, next) => {
 
         if (!product) {
             logger.info("Producto no encontrado");
-            return res.status(404).json({ message: 'Producto no encontrado' });
+            return res.status(404).json({ success: false, message: 'Producto no encontrado' });
         }
 
         if (userRole === 'premium' && product.owner.toString() === userId.toString()) {
             logger.warn(`Usuario premium intentó agregar un producto que le pertenece. User ID: ${userId}, Product Owner: ${product.owner}`);
-            return res.status(403).json({ message: 'No puedes agregar tu propio producto al carrito' });
+            return res.status(403).json({ success: false, message: 'No puedes agregar tu propio producto al carrito' });
         }
 
         const { success, message, cart } = await cartService.addToCart(cid, pid, quantity);
         if (success) {
-            res.json({ message, cart });
+            res.json({ success: true, message, cart });
         } else {
             next({ code: 'NOT_FOUND', message });
         }
