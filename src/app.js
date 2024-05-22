@@ -15,6 +15,7 @@ const debugRouter = require('./routes/debug.router.js');
 const initializePassport = require("./config/passport.config.js");
 const config = require('./config/config.js');
 const UserModel = require('./dao/models/user-mongoose.js');
+const Product = require('./dao/models/products-mongoose.js');
 const errorHandler = require('./middleware/errorHandler.js');
 const errorCodes = require('./utils/errorCodes.js');
 const logger = require('./config/logger.js');
@@ -144,9 +145,29 @@ io.on("connection", async (socket) => {
 
     socket.emit("products", await productRepositor.getProducts());
 
-    socket.on("deleteProduct", async (id) => {
-        await productRepositor.deleteProduct(id);
-        io.sockets.emit("products", await productRepositor.getProducts());
+    socket.on("deleteProduct", async ({ id, userId, userRole }) => {
+        try {
+            const product = await Product.findById(id);
+
+            if (!product) {
+                logger.info("Producto no encontrado");
+                socket.emit("deleteError", { message: "Producto no encontrado" });
+                return;
+            }
+
+            if (userRole === 'premium' && product.owner.toString() !== userId) {
+                logger.warn(`Usuario premium intentó borrar un producto que no le pertenece. User ID: ${userId}, Product Owner: ${product.owner}`);
+                socket.emit("deleteError", { message: "No autorizado para borrar este producto" });
+                return;
+            }
+
+            await Product.findByIdAndDelete(id);
+            io.sockets.emit("products", await Product.find());
+            logger.info('Producto eliminado correctamente');
+        } catch (error) {
+            logger.error('Error al eliminar el producto:', error);
+            socket.emit("deleteError", { message: "Error interno al eliminar el producto" });
+        }
     });
 
     socket.on("addProduct", async (producto) => {
